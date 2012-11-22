@@ -1,0 +1,5 @@
+SRC += 	src/base/glift/gliftGenerator.c\
+	src/base/glift/gliftIo.c\
+	src/base/glift/gliftNetwork.c\
+	src/base/glift/gliftWriteBench.c\
+	src/base/glift/main.c

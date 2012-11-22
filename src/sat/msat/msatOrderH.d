@@ -1,0 +1,3 @@
+src/sat/msat/msatOrderH.d src/sat/msat/msatOrderH.o: src/sat/msat/msatOrderH.c src/sat/msat/msatInt.h \
+ /home/ultracold/Working/abc_glift/src/misc/util/abc_global.h \
+ src/sat/msat/msat.h

@@ -1,0 +1,24 @@
+# 4 inputs
+# 1 output
+# 1 D-type flipflops
+# 2 inverters
+# 5 gates (2 ANDs + 1 OR + 1 NOR)
+
+INPUT(G0)
+INPUT(G1)
+INPUT(G2)
+INPUT(G3)
+
+OUTPUT(G10)
+
+G7 = DFF(G3)
+
+G4 = NOT(G1)
+G9 = NOT(G8)
+
+G5 = AND(G0, G1)
+G6 = AND(G2, G4)
+
+G8 = OR(G5, G6)
+
+G10 = NOR(G7, G9)

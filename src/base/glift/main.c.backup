@@ -1,0 +1,79 @@
+#include <stdio.h>
+#include "glift.h"
+
+extern void Abc_Start();
+extern void Abc_Stop();
+
+extern void * Abc_FrameGetGlobalFrame();
+//#define NODETEST
+//#define WHOLENTKTEST
+#define NTKTEST
+int main( int argc, char * argv[] )
+{
+	Abc_Ntk_t * pNtk;
+//	Abc_Obj_t * pNodeIn, * pNetIn, * pNodeOut, * pNetOut, * pNode;
+	Abc_Obj_t * pNodeAnd;
+	Glift_Taint_t * temp;
+	Abc_Start();
+	pNtk = Glift_IoReadNetlist( "w100.bench", 0);
+
+#ifdef NODETEST
+	int i;
+	Abc_NtkForEachObj(pNtk, pNodeAnd, i)
+	{
+	/*	if(Abc_ObjIsNode(pNodeAnd))
+		{
+			if(!strcmp(pNodeAnd->pData, "01 1\n10 1\n"))
+			{
+				temp = Glift_NodeGenerator( pNtk, pNodeAnd );
+				break;
+			}
+		}
+	*/
+		if(Abc_ObjIsLatch(pNodeAnd))
+		{
+			temp = Glift_NodeGenerator( pNtk, pNodeAnd );
+			break;
+		}
+	}
+	Abc_Obj_t * pTerm;
+	for( i = 0; i < temp->vFaninTaint->nSize; i++ )
+	{
+		pNodeAnd = (Abc_Obj_t *)pNtk->vObjs->pArray[temp->vFaninTaint->pArray[i]];
+		pTerm = Abc_NtkCreatePi( pNtk );
+		Abc_ObjAddFanin( pNodeAnd, pTerm );
+	}
+//	pNodeAnd = Abc_NtkObj( pNtk, (temp->vFanoutTaint)->pArray[0] );
+	pNodeAnd = (Abc_Obj_t *)pNtk->vObjs->pArray[temp->vFanoutTaint->pArray[0]];
+	pTerm = Abc_NtkCreatePo( pNtk );
+	Abc_ObjAddFanin( pTerm, pNodeAnd );
+#endif
+/*	
+	pNetIn = Abc_NtkFindOrCreateNet( pNtk, "G100" );
+	pNodeIn = Abc_NtkCreatePi( pNtk );
+	Abc_ObjAddFanin( pNetIn, pNodeIn );
+	pNetOut = Abc_NtkFindOrCreateNet( pNtk, "G200" );
+	pNodeOut = Abc_NtkCreatePi( pNtk );
+	Abc_ObjAddFanin( pNodeOut, pNetOut );
+	pNode = Abc_NtkCreateNode( pNtk );
+	Abc_ObjAddFanin( pNode, pNetIn);
+	Abc_ObjAddFanin( pNode, pNetOut);
+	pNetOut = Abc_NtkFindOrCreateNet( pNtk, "G300" );
+	pNodeOut = Abc_NtkCreatePo( pNtk );
+	Abc_ObjAddFanin( pNodeOut, pNetOut );
+	Abc_ObjAddFanin( pNetOut, pNode );
+	Abc_ObjSetData( pNode, Abc_SopCreateAnd((Mem_Flex_t *)pNtk->pManFunc, 2, NULL ) );
+*/
+
+#ifdef WHOLENTKTEST
+	Glift_AddGliftForAllNode( pNtk );
+#endif
+
+#ifdef NTKTEST
+	Glift_AddGliftForIsolateNtk( pNtk, pNtk->vPis->pArray[4] );
+#endif
+	Glift_WriteBench( pNtk, "w101.bench" );
+	Abc_Stop();
+	return 0;
+}
+
